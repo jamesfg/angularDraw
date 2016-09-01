@@ -1,0 +1,25 @@
+{
+  "name": "angular-draw",
+  "version": "1.0.0",
+  "description": "drawing application with angular",
+  "main": "app.js",
+  "dependencies": {
+    "angular": "^1.5.8",
+    "bootstrap": "^3.3.7",
+    "http-server": "^0.9.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "http-server ./ -a localhost -p 8000 -c-1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "TODO"
+  },
+  "keywords": [
+    "angular",
+    "draw"
+  ],
+  "author": "James Garcia",
+  "license": "MIT"
+}
