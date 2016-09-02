@@ -1,12 +1,24 @@
 // originates from a stack overflow question
 
 var app = angular.module("app", []);
+var socket = io();
 
 app.directive("drawing", function(){
   return {
     restrict: "A",
     link: function(scope, element){
+
+
       var ctx = element[0].getContext('2d');
+
+      socket.on('drawing', function(msg){
+        var img = new Image();
+        img.src = msg;
+        element[0].width = img.width;
+        element[0].height = img.height;
+        ctx.drawImage(img,0,0);
+      });
+
       var imageLoader = document.getElementById('imageLoader');
       imageLoader.addEventListener('change', handleImage, false);
       
@@ -60,6 +72,8 @@ app.directive("drawing", function(){
         ctx.strokeStyle = '#fff';
         // draw it
         ctx.stroke();
+        var dt = canvas.toDataURL('image/jpeg');
+        socket.emit('drawing', dt);
       }
       function download() {
         var dt = canvas.toDataURL('image/jpeg');
@@ -83,6 +97,7 @@ app.directive("drawing", function(){
     }
   };
 });
+
 
 // app.directive("drawing", function(){
 //   return {

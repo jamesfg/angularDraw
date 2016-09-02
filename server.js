@@ -13,6 +13,9 @@ io.on('connection', function(socket){
   	socket.on('disconnect', function(){
     	console.log('user disconnected');
   	});
+	socket.on('drawing', function(msg){
+		io.emit('drawing', msg);
+	});
 });
 
 http.listen(3000, function(){
