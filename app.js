@@ -7,6 +7,8 @@ app.directive("drawing", function(){
     restrict: "A",
     link: function(scope, element){
       var ctx = element[0].getContext('2d');
+      var imageLoader = document.getElementById('imageLoader');
+      imageLoader.addEventListener('change', handleImage, false);
       
       // variable that decides if something should be drawn on mousemove
       var drawing = false;
@@ -58,6 +60,25 @@ app.directive("drawing", function(){
         ctx.strokeStyle = '#fff';
         // draw it
         ctx.stroke();
+      }
+      function download() {
+        var dt = canvas.toDataURL('image/jpeg');
+        this.href = dt;
+      };
+      downloadLnk.addEventListener('click', download, false);
+
+      function handleImage(e){
+        var reader = new FileReader();
+        reader.onload = function(event){
+          var img = new Image();
+          img.onload = function(){
+            element[0].width = img.width;
+            element[0].height = img.height;
+            ctx.drawImage(img,0,0);
+          }
+          img.src = event.target.result;
+        }
+        reader.readAsDataURL(e.target.files[0]);     
       }
     }
   };
