@@ -3,11 +3,17 @@
 var app = angular.module("app", []);
 var socket = io();
 
-app.directive("drawing", function(){
+app.controller('controller', ['$scope', function($scope) {
+  $scope.drawType = "";
+  $scope.setDrawtype = function(type){
+    console.log(type)
+    $scope.drawType = type;
+  }
+}])
+.directive("drawing", function(){
   return {
     restrict: "A",
-    link: function(scope, element){
-
+    link: function(scope, element, attrs){
 
       var ctx = element[0].getContext('2d');
 
@@ -16,7 +22,7 @@ app.directive("drawing", function(){
         img.src = msg;
         element[0].width = img.width;
         element[0].height = img.height;
-        ctx.drawImage(img,0,0);
+        ctx.drawImage(img,0,0);``
       });
 
       var imageLoader = document.getElementById('imageLoader');
@@ -26,13 +32,13 @@ app.directive("drawing", function(){
       var drawing = false;
       
       // the last coordinates before the current move
-      var centerX;
-      var centerY;
+      var lastX;
+      var lastY;
       
       element.bind('mousedown', function(event){
         
-        centerX = event.offsetX;
-        centerY = event.offsetY;
+        lastX = event.offsetX;
+        lastY = event.offsetY;
         
         // begins new line
         ctx.beginPath();
@@ -42,11 +48,31 @@ app.directive("drawing", function(){
 
       element.bind('mousemove', function(event){
         if(drawing){
+
           // get current mouse position
-          currentX = event.offsetX;
-          currentY = event.offsetY;
-          
-          draw(centerX, centerY, currentX, currentY);
+          if(event.offsetX!==undefined){
+            currentX = event.offsetX;
+            currentY = event.offsetY;
+          } else {
+            currentX = event.layerX - event.currentTarget.offsetLeft;
+            currentY = event.layerY - event.currentTarget.offsetTop;
+          }
+
+          if(attrs.drawtype === "free") {
+            drawFree(lastX, lastY, currentX, currentY);
+
+            // set current coordinates to last one
+            lastX = currentX;
+            lastY = currentY;
+
+          } else if(attrs.drawtype === "rect") {
+              drawRect(lastX, lastY, currentX, currentY);
+          }
+
+
+          var dt = canvas.toDataURL('image/jpeg');
+          socket.emit('drawing', dt);
+
         }
         
       });
@@ -60,8 +86,19 @@ app.directive("drawing", function(){
       function reset(){
        element[0].width = element[0].width; 
       }
+
+      function drawFree(lX, lY, cX, cY){
+        // line from
+        ctx.moveTo(lX,lY);
+        // to
+        ctx.lineTo(cX,cY);
+        // color
+        ctx.strokeStyle = "#fff";
+        // draw it
+        ctx.stroke();
+      }
       
-      function draw(startX, startY, currentX, currentY){
+      function drawRect(startX, startY, currentX, currentY){
         reset();
         var sizeX = currentX - startX;
         var sizeY = currentY - startY;
@@ -72,8 +109,6 @@ app.directive("drawing", function(){
         ctx.strokeStyle = '#fff';
         // draw it
         ctx.stroke();
-        var dt = canvas.toDataURL('image/jpeg');
-        socket.emit('drawing', dt);
       }
       function download() {
         var dt = canvas.toDataURL('image/jpeg');
@@ -155,16 +190,7 @@ app.directive("drawing", function(){
 //        element[0].width = element[0].width; 
 //       }
 
-//       function draw(lX, lY, cX, cY){
-//         // line from
-//         ctx.moveTo(lX,lY);
-//         // to
-//         ctx.lineTo(cX,cY);
-//         // color
-//         ctx.strokeStyle = "#4bf";
-//         // draw it
-//         ctx.stroke();
-//       }
+
 //     }
 //   };
 // });

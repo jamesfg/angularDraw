@@ -13,15 +13,25 @@
   </head>
 
   <body>
-    <div id="d">
-      <h1>Simple Canvas Drawing Directive in AngularJS</h1>
-      <canvas width="500" height="300" id="canvas" drawing></canvas>
+    <div id="d" ng-controller="controller"> 
+      <h1>AngularDraw</h1>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="btn-group" role="group" aria-label="...">
+            <button type="button" class="btn btn-default">circle</button>
+            <button type="button" class="btn btn-default">triangle</button>
+            <button type="button" class="btn btn-default" ng-click="setDrawtype('rect')">rectangle</button>
+            <button type="button" class="btn btn-default">line</button>
+            <button type="button" class="btn btn-default" ng-click="setDrawtype('free')">free</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <canvas width="500" height="300" id="canvas" drawing drawType={{drawType}}></canvas>
+        </div>
+      </div>
     </div>
     <a id="downloadLnk" download="newDrawing.ldc">Download as image</a>
     <input type="file" id="imageLoader" name="imageLoader"/>
-    <script>
-
-    </script>
   </body>
 
 </html>
