@@ -64,11 +64,15 @@ app.controller('controller', ['$scope', function($scope) {
             // set current coordinates to last one
             lastX = currentX;
             lastY = currentY;
-
           } else if(attrs.drawtype === "rect") {
               drawRect(lastX, lastY, currentX, currentY);
+          } else if(attrs.drawtype === "circle") {
+              drawCircle(lastX, lastY, currentX, currentY);
+          } else if(attrs.drawtype === "triangle") {
+              drawTriangle(lastX, lastY, currentX, currentY);
+          } else if(attrs.drawtype === "line") {
+              drawLine(lastX, lastY, currentX, currentY);
           }
-
 
           var dt = canvas.toDataURL('image/jpeg');
           socket.emit('drawing', dt);
@@ -93,6 +97,7 @@ app.controller('controller', ['$scope', function($scope) {
         // to
         ctx.lineTo(cX,cY);
         // color
+        ctx.lineWidth = 3;
         ctx.strokeStyle = "#fff";
         // draw it
         ctx.stroke();
@@ -102,14 +107,53 @@ app.controller('controller', ['$scope', function($scope) {
         reset();
         var sizeX = currentX - startX;
         var sizeY = currentY - startY;
-        
         ctx.rect(startX, startY, sizeX, sizeY);
+        ctx.fillStyle = "#fff";
+        ctx.fill();
         ctx.lineWidth = 3;
-        // color
         ctx.strokeStyle = '#fff';
-        // draw it
         ctx.stroke();
       }
+
+      function drawCircle(startX, startY, currentX, currentY) {
+        reset();
+        var centerX = lastX;
+        var centerY = lastY;
+        var radius = currentX - startX / 2;
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+        ctx.fillStyle = "#fff";
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#fff';
+        ctx.stroke();
+      }
+
+      function drawTriangle(startX, startY, currentX, currentY) {
+        reset();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(currentX, currentY);
+        ctx.lineTo(currentY, currentY);
+        ctx.closePath();
+         
+        // the outline
+        ctx.lineWidth = 10;
+        // the fill color
+        ctx.fillStyle = "#fff";
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.stroke();
+      }
+
+      function drawLine(startX, startY, currentX, currentY){
+        reset();
+        ctx.moveTo(startX,startY);
+        ctx.lineTo(currentX,currentY);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "#fff";
+        ctx.stroke();
+      }
+
+
       function download() {
         var dt = canvas.toDataURL('image/jpeg');
         this.href = dt;
