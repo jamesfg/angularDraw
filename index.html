@@ -23,15 +23,24 @@
             <button type="button" class="btn btn-default" ng-click="setDrawtype('rect')">rectangle</button>
             <button type="button" class="btn btn-default" ng-click="setDrawtype('line')">line</button>
             <button type="button" class="btn btn-default" ng-click="setDrawtype('free')">free</button>
+            <button type="button" class="btn btn-default" ng-click="setDrawtype('eraser')">eraser</button>
           </div>
         </div>
         <div class="panel-body">
           <canvas width="500" height="300" id="canvas" drawing drawType={{drawType}}></canvas>
         </div>
+        <div class="panel-footer">
+          <div class="btn-group-vertical" role="group" aria-label="...">
+            <a id="downloadLnk" download="newDrawing.ldc">Download as image</a>
+            <input type="file" id="imageLoader" name="imageLoader">
+          </div>
+        </div>
+      </div>
+      <div ng-repeat="user in currentUsers">
+        User {{user}} Connected
       </div>
     </div>
-    <a id="downloadLnk" download="newDrawing.ldc">Download as image</a>
-    <input type="file" id="imageLoader" name="imageLoader"/>
+    
   </body>
 
 </html>
