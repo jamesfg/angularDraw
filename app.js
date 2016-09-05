@@ -4,25 +4,36 @@ var app = angular.module("app", []);
 var socket = io();
 
 app.controller('controller', ['$scope', function($scope) {
-  $scope.drawType = "";
+  $scope.drawType = "free";
+  $('#freeDrawType').button('toggle');
   $scope.setDrawtype = function(type){
     console.log(type);
+    toggleToolbar();
     $scope.drawType = type;
   }
   $scope.currentUsers = [];
-  socket.on('currentUsers', function(msg){
+  socket.on('userEvent', function(msg){
     console.log(msg);
-    $scope.currentUsers.push(msg);
+    $scope.currentUsers = msg;
     $scope.$apply();
   });
-  socket.on('disconnectedUser', function(msg){
-    var index = $scope.currentUsers.indexOf(msg);
-    console.log(index);
-    if (index > -1) {
-      $scope.currentUsers.splice(index, 1);
-      $scope.$apply();
-    }
-  });
+
+  function toggleToolbar() {
+    var options = [
+      '#circleDrawType',
+      '#triangleDrawType',
+      '#rectDrawType',
+      '#lineDrawType',
+      '#freeDrawType',
+      '#eraserDrawType',
+    ]; 
+    options.map(function(option){ 
+      if($(option)[0].className.includes('active')){
+        $(option).button('toggle');
+      }
+    });
+    
+  }
 }])
 .directive("drawing", function(){
   return {
