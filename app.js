@@ -89,7 +89,6 @@ app.controller('controller', ['$scope', function($scope) {
 
           if(attrs.drawtype === "free") {
             drawFree(lastX, lastY, currentX, currentY);
-
             // set current coordinates to last one
             lastX = currentX;
             lastY = currentY;
@@ -103,9 +102,11 @@ app.controller('controller', ['$scope', function($scope) {
               drawLine(lastX, lastY, currentX, currentY);
           } else if(attrs.drawtype === "eraser") {
               drawEraser(lastX, lastY, currentX, currentY);
+              lastX = currentX;
+              lastY = currentY;
           }
 
-          var dt = canvas.toDataURL('image/jpeg');
+          var dt = canvas.toDataURL('image/png');
           socket.emit('drawing', dt);
 
         }
@@ -125,9 +126,9 @@ app.controller('controller', ['$scope', function($scope) {
        element[0].width = element[0].width; 
       }
 
-      function drawFree(lX, lY, cX, cY){
-        ctx.moveTo(lX,lY);
-        ctx.lineTo(cX,cY);
+      function drawFree(startX, startY, currentX, currentY){
+        ctx.moveTo(startX,startY);
+        ctx.lineTo(currentX,currentY);
         ctx.lineWidth = 3;
         ctx.strokeStyle = "#fff";
         ctx.stroke();
@@ -184,12 +185,13 @@ app.controller('controller', ['$scope', function($scope) {
         ctx.stroke();
       }
 
-      function drawEraser(lX, lY, cX, cY){
-        ctx.moveTo(lX,lY);
-        ctx.lineTo(cX,cY);
+      function drawEraser(startX, startY, currentX, currentY){
+        ctx.moveTo(startX,startY);
+        ctx.lineTo(currentX,currentY);
         ctx.lineWidth = 3;
         ctx.globalCompositeOperation = "destination-out";
-        ctx.strokeStyle = "rgba(0,0,0,1)";
+        ctx.strokeStyle = "rgba(0,0,0,1.0)";
+        ctx.stroke();
       }
 
       //IMAGE HANDLERS
