@@ -5,19 +5,22 @@ var socket = io();
 
 app.controller('controller', ['$scope', function($scope) {
   $scope.drawType = "free";
+
+  // sets tool type
   $('#freeDrawType').button('toggle');
   $scope.setDrawtype = function(type){
-    console.log(type);
     toggleToolbar();
     $scope.drawType = type;
   }
+
+  // gets current users object
   $scope.currentUsers = [];
   socket.on('userEvent', function(msg){
-    console.log(msg);
     $scope.currentUsers = msg;
     $scope.$apply();
   });
 
+  // toggles bootstrap toolbar buttons
   function toggleToolbar() {
     var options = [
       '#circleDrawType',
@@ -42,13 +45,8 @@ app.controller('controller', ['$scope', function($scope) {
 
       var ctx = element[0].getContext('2d');
 
-      socket.on('drawing', function(msg){
-        var img = new Image();
-        img.src = msg;
-        element[0].width = img.width;
-        element[0].height = img.height;
-        ctx.drawImage(img,0,0);
-      });
+      // keeps last image to allow drawing without resetting cavnas
+      var lastImage = new Image();
 
       // deals with loading image
       var imageLoader = document.getElementById('imageLoader');
@@ -60,6 +58,15 @@ app.controller('controller', ['$scope', function($scope) {
       // the last coordinates before the current move
       var lastX;
       var lastY;
+
+      // draws latest socket message
+      socket.on('drawing', function(msg){
+        var img = new Image();
+        img.src = msg;
+        element[0].width = img.width;
+        element[0].height = img.height;
+        ctx.drawImage(img,0,0);
+      });
       
 
       //MOUSE DOWN
@@ -67,6 +74,8 @@ app.controller('controller', ['$scope', function($scope) {
         
         lastX = event.offsetX;
         lastY = event.offsetY;
+
+        saveLastDrawing();
         
         // begins new line
         ctx.beginPath();
@@ -123,7 +132,8 @@ app.controller('controller', ['$scope', function($scope) {
 
       // canvas reset
       function reset(){
-       element[0].width = element[0].width; 
+        element[0].width = element[0].width; 
+        ctx.drawImage(lastImage,0,0);
       }
 
       function drawFree(startX, startY, currentX, currentY){
@@ -142,9 +152,6 @@ app.controller('controller', ['$scope', function($scope) {
         ctx.rect(startX, startY, sizeX, sizeY);
         ctx.fillStyle = "#fff";
         ctx.fill();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = '#fff';
-        ctx.stroke();
       }
 
       function drawCircle(startX, startY, currentX, currentY) {
@@ -155,9 +162,6 @@ app.controller('controller', ['$scope', function($scope) {
         ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
         ctx.fillStyle = "#fff";
         ctx.fill();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = '#fff';
-        ctx.stroke();
       }
 
       function drawTriangle(startX, startY, currentX, currentY) {
@@ -166,10 +170,7 @@ app.controller('controller', ['$scope', function($scope) {
         ctx.lineTo(currentX, currentY);
         ctx.lineTo(currentY, currentY);
         ctx.closePath();
-         
-        // the outline
         ctx.lineWidth = 10;
-        // the fill color
         ctx.fillStyle = "#fff";
         ctx.fill();
         ctx.strokeStyle = '#fff';
@@ -196,7 +197,7 @@ app.controller('controller', ['$scope', function($scope) {
 
       //IMAGE HANDLERS
       function download() {
-        var dt = canvas.toDataURL('image/jpeg');
+        var dt = canvas.toDataURL('image/jpg');
         this.href = dt;
       };
       downloadLnk.addEventListener('click', download, false);
@@ -213,6 +214,11 @@ app.controller('controller', ['$scope', function($scope) {
           img.src = event.target.result;
         }
         reader.readAsDataURL(e.target.files[0]);     
+      }
+
+      // saves last image to allow drawing without resetting canvas
+      function saveLastDrawing() {
+        lastImage.src = canvas.toDataURL('image/png');
       }
     }
   };
