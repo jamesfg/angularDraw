@@ -44,6 +44,9 @@ app.controller('controller', ['$scope', function($scope) {
     link: function(scope, element, attrs){
 
       var ctx = element[0].getContext('2d');
+      // At least Safari 3+: "[object HTMLElementConstructor]"
+      var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
+
 
       // keeps last image to allow drawing without resetting cavnas
       var lastImage = new Image();
@@ -63,9 +66,22 @@ app.controller('controller', ['$scope', function($scope) {
       socket.on('drawing', function(msg){
         var img = new Image();
         img.src = msg;
-        element[0].width = img.width;
-        element[0].height = img.height;
-        ctx.drawImage(img,0,0);
+
+        // fix for safari since it can't access image until loaded
+        if(isSafari){
+          img.onload = function(){
+            element[0].width = this.width;
+            element[0].height = this.height;
+            ctx.drawImage(img,0,0);
+          }
+        } else {
+            element[0].width = img.width;
+            element[0].height = img.height;
+            ctx.drawImage(img,0,0);
+        }
+
+
+
       });
       
 
@@ -95,7 +111,6 @@ app.controller('controller', ['$scope', function($scope) {
             currentX = event.layerX - event.currentTarget.offsetLeft;
             currentY = event.layerY - event.currentTarget.offsetTop;
           }
-
           if(attrs.drawtype === "free") {
             drawFree(lastX, lastY, currentX, currentY);
             // set current coordinates to last one
@@ -117,7 +132,6 @@ app.controller('controller', ['$scope', function($scope) {
 
           var dt = canvas.toDataURL('image/png');
           socket.emit('drawing', dt);
-
         }
         
       });
