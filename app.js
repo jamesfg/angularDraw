@@ -211,9 +211,15 @@ app.controller('controller', ['$scope', function($scope) {
 
       //IMAGE HANDLERS
       function download() {
-        var dt = canvas.toDataURL('image/jpg');
-        this.href = dt;
+        var download = canvas.toDataURL('image/jpg');
+        if(isSafari){
+          var w=window.open('about:blank','image from canvas');
+          w.document.write("<img src='"+canvas.toDataURL("image/png")+"' alt='from canvas'/>");
+        } else {
+          this.href = download;
+        }
       };
+
       downloadLnk.addEventListener('click', download, false);
 
       function handleImage(e){
