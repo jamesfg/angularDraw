@@ -44,6 +44,10 @@ app.controller('controller', ['$scope', function($scope) {
     link: function(scope, element, attrs){
 
       var ctx = element[0].getContext('2d');
+
+      setBackground();
+
+
       // At least Safari 3+: "[object HTMLElementConstructor]"
       var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
 
@@ -154,7 +158,7 @@ app.controller('controller', ['$scope', function($scope) {
         ctx.moveTo(startX,startY);
         ctx.lineTo(currentX,currentY);
         ctx.lineWidth = 3;
-        ctx.strokeStyle = "#fff";
+        ctx.strokeStyle = "#000";
         ctx.stroke();
       }
       
@@ -164,7 +168,7 @@ app.controller('controller', ['$scope', function($scope) {
         var sizeX = currentX - startX;
         var sizeY = currentY - startY;
         ctx.rect(startX, startY, sizeX, sizeY);
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = "#000";
         ctx.fill();
       }
 
@@ -174,7 +178,7 @@ app.controller('controller', ['$scope', function($scope) {
         var centerY = lastY;
         var radius = currentX - startX / 2;
         ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = "#000";
         ctx.fill();
       }
 
@@ -185,9 +189,9 @@ app.controller('controller', ['$scope', function($scope) {
         ctx.lineTo(currentY, currentY);
         ctx.closePath();
         ctx.lineWidth = 10;
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = "#000";
         ctx.fill();
-        ctx.strokeStyle = '#fff';
+        ctx.strokeStyle = '#000';
         ctx.stroke();
       }
 
@@ -196,7 +200,7 @@ app.controller('controller', ['$scope', function($scope) {
         ctx.moveTo(startX,startY);
         ctx.lineTo(currentX,currentY);
         ctx.lineWidth = 3;
-        ctx.strokeStyle = "#fff";
+        ctx.strokeStyle = "#000";
         ctx.stroke();
       }
 
@@ -204,8 +208,7 @@ app.controller('controller', ['$scope', function($scope) {
         ctx.moveTo(startX,startY);
         ctx.lineTo(currentX,currentY);
         ctx.lineWidth = 3;
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.strokeStyle = "rgba(0,0,0,1.0)";
+        ctx.strokeStyle = "#fff";
         ctx.stroke();
       }
 
@@ -218,6 +221,13 @@ app.controller('controller', ['$scope', function($scope) {
         } else {
           this.href = download;
         }
+      };
+
+      function setBackground(){
+        ctx.beginPath();
+        ctx.rect(0, 0, 500, 300);
+        ctx.fillStyle = "white";
+        ctx.fill();
       };
 
       downloadLnk.addEventListener('click', download, false);
