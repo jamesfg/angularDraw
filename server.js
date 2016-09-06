@@ -21,11 +21,10 @@ io.on('connection', function(socket){
 	{
 		io.emit('drawing', currentDrawing);
 	}
-	
+
 	// disconnect
   	socket.on('disconnect', function(){
 	    var index = currentUsers.indexOf(socket.id);
-	    console.log(index);
 	    if (index > -1) {
 	      	currentUsers.splice(index, 1);
 			io.emit('userEvent', currentUsers);
