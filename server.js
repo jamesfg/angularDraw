@@ -8,13 +8,13 @@ app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html');
 });
 
+// save all current users
 var currentUsers = [];
+
+// save current drawing state
 var currentDrawing = "";
 
 io.on('connection', function(socket){
-
-	
-	console.log('a user connected');
 	currentUsers.push(socket.id);
 	io.emit('userEvent', currentUsers);
 	if(currentDrawing !== "")
@@ -22,10 +22,8 @@ io.on('connection', function(socket){
 		io.emit('drawing', currentDrawing);
 	}
 	
-
 	// disconnect
   	socket.on('disconnect', function(){
-    	console.log('user disconnected');
 	    var index = currentUsers.indexOf(socket.id);
 	    console.log(index);
 	    if (index > -1) {
